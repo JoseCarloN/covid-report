@@ -1,0 +1,34 @@
+---
+title: "Transforming csv data to parquet format"
+author: "Jose Carlo Navarrete"
+date: "19/9/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Setting up libraries
+```{r include=FALSE}
+library(tidyverse)
+library(arrow)
+```
+
+Reading up to date COVID-19 csv file
+```{r include=FALSE}
+# Listing all files on path
+files = list.files(path = "../Data")
+
+# Listing all .csv files on path
+file_name = list.files(path = "../Data", pattern = ".csv")
+
+# Parquet file name
+parquet_name = str_replace(file_name, pattern = "csv", replacement = "parquet")
+
+# If theres already a parquet file with the same name as the csv one then break out, if not, 
+# then create the parquet file.
+if (!parquet_name %in% files) {
+  df = read_csv(paste0("../Data/", file_name)) %>%
+    write_parquet(sink = paste0("../Data/", str_replace(file_name, pattern = "csv", replacement = "parquet")))
+}
+```
+
