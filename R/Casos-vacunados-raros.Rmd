@@ -1,5 +1,6 @@
 ---
 title: "Defunciones de pacientes con esquema de vacunación completo y efectivo"
+date: '`r paste("Actualizado el", format(Sys.Date() - 1, "%d de %B del %Y"), "con datos de la SINAVE")`'
 output:
   html_document:
     fig_retina: 1
@@ -146,7 +147,7 @@ desconocido_laboratorio = laboratorios[which(laboratorios$TIPO_VAC_COV == "Se de
 ### Laboratorio de la vacuna
 En cuanto a la vacuna con la que contaban los pacientes que fallecieron, el mayor porcentaje de aplicación en estos es la del laboratorio de `r max_laboratorio[, "TIPO_VAC_COV"]` con el `r max_laboratorio[, "Porcentaje"]`% de los casos. Seguida por el laboratorio `r segundo_laboratorio[, "TIPO_VAC_COV"]` con un `r segundo_laboratorio[, "Porcentaje"]`%. Se desconoce el laboratorio al que pertenece la vacuna del `r desconocido_laboratorio[,"Porcentaje"]`%.
 
-```{r echo = FALSE, dpi = 500, fig.showtext = TRUE}
+```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height=4, fig.width=10}
 sinave_vacunados %>%
   group_by(EVOLUCI, TIPO_VAC_COV) %>%
   summarise(
