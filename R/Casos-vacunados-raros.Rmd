@@ -147,7 +147,7 @@ desconocido_laboratorio = laboratorios[which(laboratorios$TIPO_VAC_COV == "Se de
 ### Laboratorio de la vacuna
 En cuanto a la vacuna con la que contaban los pacientes que fallecieron, el mayor porcentaje de aplicación en estos es la del laboratorio de `r max_laboratorio[, "TIPO_VAC_COV"]` con el `r max_laboratorio[, "Porcentaje"]`% de los casos. Seguida por el laboratorio `r segundo_laboratorio[, "TIPO_VAC_COV"]` con un `r segundo_laboratorio[, "Porcentaje"]`%. Se desconoce el laboratorio al que pertenece la vacuna del `r desconocido_laboratorio[,"Porcentaje"]`%.
 
-```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height=4, fig.width=10}
+```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height=5, fig.width=10}
 sinave_vacunados %>%
   group_by(EVOLUCI, TIPO_VAC_COV) %>%
   summarise(
@@ -174,8 +174,7 @@ sinave_vacunados %>%
     axis.title = element_blank(),
     axis.ticks = element_blank(),
     panel.background = element_blank()
-    # plot.background = element_rect(fill="darkseagreen")
-    ) +
+  ) +
   facet_wrap(~ EVOLUCI)
 ```
 
@@ -183,7 +182,6 @@ sinave_vacunados %>%
 
 ```{r echo = FALSE}
 num_comorbilidades = sinave_vacunados %>%
-  filter(EVOLUCI == "Defunción") %>%
   select(DIABETES:TABAQUIS) %>%
   transmute(
     Comorbilidades = apply(., MARGIN = 1, FUN = function(x) {
@@ -224,6 +222,7 @@ num_comorbilidades %>%
     axis.title = element_blank(),
     axis.ticks = element_blank(),
     axis.text = element_blank(),
+    axis.text.x = element_text(family = "Barlow Light", color = "white", size = 16),
     panel.grid = element_blank(),
     panel.background = element_blank()
     )
