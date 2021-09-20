@@ -1,0 +1,19 @@
+@page {
+    size: letter;
+    margin-bottom: 10mm;
+    text-align: justify;
+
+    @bottom-right-corner {
+        content: counter(page);
+        text-align: center;
+        vertical-align: middle;
+    }
+}
+
+h3 {
+    break-before: page;
+}
+
+.footnote {
+    font-size: 0
+}
