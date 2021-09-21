@@ -18,7 +18,7 @@ output:
   pdf_document:
     toc: yes
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -44,19 +44,20 @@ library(Rfast)
 thematic_rmd()
 # font_add_google("Barlow", "Barlow regular", regular.wt = 500, bold.wt = 900)
 font_add("Barlow black", regular = "C:/Windows/Fonts/Barlow-Black.ttf")
+font_add("Barlow light", regular = "C:/Windows/Fonts/Barlow-light.ttf")
 
-round_preserve_sum <- function(x, digits = 0) {
-up = 10 ^ digits
-x = x * up
-y = floor(x)
-indices = tail(order(x - y), round(sum(x)) - sum(y))
-y[indices] =  y[indices] + 1
-y / up
+round_preserve_sum = function(x, digits = 0) {
+  up = 10 ^ digits
+  x = x * up
+  y = floor(x)
+  indices = tail(order(x - y), round(sum(x)) - sum(y))
+  y[indices] =  y[indices] + 1
+  y / up
 }
 
 ```
 
-``` {css echo = FALSE}
+```{css echo = FALSE}
 body {
   text-align: justify;
 }
@@ -112,11 +113,11 @@ fallecidos = sinave_vacunados %>%
 
 # Análisis descriptivo
 
-Con respecto a la base de datos de la SINAVE, al día de hoy se registran `r nrow(sinave_vacunados)` casos positivos a COVID-19 de pacientes que contaban con un esquema de vacunación completo y a su vez efectivo. De estos, `r fallecidos[which(fallecidos$EVOLUCI == "Defunción"), "n"]` fallecieron, lo que representa el `r fallecidos[which(fallecidos$EVOLUCI == "Defunción"), "Porcentaje"]`% de los casos.    
+Con respecto a la base de datos de la SINAVE, al día de hoy se registran `r nrow(sinave_vacunados)` casos positivos a COVID-19 de pacientes que contaban con un esquema de vacunación completo y a su vez efectivo. De estos, `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` fallecieron, lo que representa el `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(Porcentaje)`% de los casos.
 
 ### Edad
-El rango de edad de las defunciones es de `r min(sinave_vacunados[which(sinave_vacunados$EVOLUCI == "Defunción"),]$EDAD)` a `r max(sinave_vacunados[which(sinave_vacunados$EVOLUCI == "Defunción"),]$EDAD)` años. Por otro lado, la edad promedio de los `r fallecidos[which(fallecidos$EVOLUCI == "Defunción"), "n"]` pacientes que fallecieron es de `r round(mean(sinave_vacunados[which(sinave_vacunados$EVOLUCI == "Defunción"),]$EDAD))` años.
 
+El rango de edad de las defunciones es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% min()` a `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% max()` años. Por otro lado, la edad promedio de los `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` pacientes que fallecieron es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% mean() %>% round()` años.
 
 ```{r echo = FALSE}
 tipacien = sinave_vacunados %>%
@@ -128,8 +129,8 @@ tipacien = sinave_vacunados %>%
 ```
 
 ### Tipo de paciente
-De los pacientes que fallecieron, el `r tipacien[which(tipacien$TIPACIEN == "HOSPITALIZADO"), "Porcentaje"]`% requirieron de hospitalización.
 
+De los pacientes que fallecieron, el `r tipacien %>% filter(TIPACIEN == "HOSPITALIZADO") %>% pull(Porcentaje)`% requirieron de hospitalización.
 
 ```{r echo = FALSE}
 laboratorios = sinave_vacunados %>%
@@ -145,7 +146,8 @@ desconocido_laboratorio = laboratorios[which(laboratorios$TIPO_VAC_COV == "Se de
 ```
 
 ### Laboratorio de la vacuna
-En cuanto a la vacuna con la que contaban los pacientes que fallecieron, el mayor porcentaje de aplicación en estos es la del laboratorio de `r max_laboratorio[, "TIPO_VAC_COV"]` con el `r max_laboratorio[, "Porcentaje"]`% de los casos. Seguida por el laboratorio `r segundo_laboratorio[, "TIPO_VAC_COV"]` con un `r segundo_laboratorio[, "Porcentaje"]`%. Se desconoce el laboratorio al que pertenece la vacuna del `r desconocido_laboratorio[,"Porcentaje"]`%.
+
+En cuanto a la vacuna con la que contaban los pacientes que fallecieron, el mayor porcentaje de aplicación en estos es la del laboratorio de `r max_laboratorio %>% pull(TIPO_VAC_COV)` con el `r max_laboratorio %>% pull(Porcentaje)`% de los casos. Seguida por el laboratorio `r segundo_laboratorio %>% pull(TIPO_VAC_COV)` con un `r segundo_laboratorio %>% pull(Porcentaje)`%. Se desconoce el laboratorio al que pertenece la vacuna del `r desconocido_laboratorio %>% pull(Porcentaje)`%.
 
 ```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height=4, fig.width=10}
 sinave_vacunados %>%
@@ -163,18 +165,18 @@ sinave_vacunados %>%
   ggplot(aes(x = "", y = Porcentaje_2, fill = TIPO_VAC_COV)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
   geom_label_repel(aes(y = pos, label = Porcentaje, family = "Barlow black"),
-                   size = 4.5, nudge_x = 1, show.legend = FALSE, label.size = NA, color = "white") +
+                   size = 7, nudge_x = 1, show.legend = FALSE, label.size = NA, color = "white") +
   coord_polar("y") +
   guides(fill = guide_legend(title = "Laboratorio",
-                             title.theme = element_text(family = "Barlow black", color = "white"),
-                             label.theme = element_text(family = "Barlow regular", color = "white"))) +
+                             title.theme = element_text(family = "Barlow black", color = "white", size = 20),
+                             label.theme = element_text(family = "Barlow regular", color = "white", size = 14))) +
   theme(
     panel.grid = element_blank(),
     axis.text = element_blank(),
     axis.title = element_blank(),
     axis.ticks = element_blank(),
-    panel.background = element_blank()
-    # plot.background = element_rect(fill="darkseagreen")
+    panel.background = element_blank(),
+    strip.text = element_text(family = "Barlow regular", size = 14)
     ) +
   facet_wrap(~ EVOLUCI)
 ```
@@ -183,12 +185,12 @@ sinave_vacunados %>%
 
 ```{r echo = FALSE}
 num_comorbilidades = sinave_vacunados %>%
-  filter(EVOLUCI == "Defunción") %>%
-  select(DIABETES:TABAQUIS) %>%
+  select(EVOLUCI, DIABETES:TABAQUIS) %>%
   transmute(
     Comorbilidades = apply(., MARGIN = 1, FUN = function(x) {
       length(which(x == "SI"))
-    })
+    }),
+    EVOLUCI
   ) %>%
   mutate(
     Comorbilidades_factor = case_when(
@@ -198,18 +200,19 @@ num_comorbilidades = sinave_vacunados %>%
       Comorbilidades > 3 ~ "4+"
     )
   ) %>%
-  count(Comorbilidades_factor) %>%
+  group_by(EVOLUCI, Comorbilidades_factor) %>%
+  summarise(n = n()) %>%
   mutate(
     Porcentaje = round_preserve_sum(100 * prop.table(n))
   )
 ```
 
-En el siguiente gráfico se puede apreciar el número de condiciones preexistentes o comorbilidades que presentaban en general los pacientes que fallecieron. El `r num_comorbilidades[which(num_comorbilidades$Comorbilidades_factor == "0"), "Porcentaje"]`% no padece de alguna comorbilidad; `r sum(num_comorbilidades[which(num_comorbilidades$Comorbilidades_factor == "1" | num_comorbilidades$Comorbilidades_factor == "2-3"), "Porcentaje"])`% padece entre 1 y 3 comorbilidades y `r num_comorbilidades[which(num_comorbilidades$Comorbilidades_factor == "4+"), "Porcentaje"]`% padece 4 o más.
+En el siguiente gráfico se puede apreciar el número de condiciones preexistentes o comorbilidades que presentaban en general los pacientes que fallecieron. El `r num_comorbilidades %>% filter(EVOLUCI == "Defunción", Comorbilidades_factor == 0) %>% pull(Porcentaje)`% no padece de alguna comorbilidad; `r num_comorbilidades %>% filter(EVOLUCI == "Defunción", Comorbilidades_factor %in% c("1", "2-3")) %>% pull(Porcentaje) %>% sum()`% padece entre 1 y 3 comorbilidades y `r num_comorbilidades %>% filter(EVOLUCI == "Defunción", Comorbilidades_factor == "4+") %>% pull(Porcentaje)`% padece 4 o más.
 
 ```{r echo = FALSE, dpi = 500, fig.showtext = TRUE}
 num_comorbilidades %>%
-  ggplot(aes(x = "", y = Porcentaje/100, fill = fct_rev(Comorbilidades_factor), label = paste0(Porcentaje, "%"))) +
-  geom_bar(position = "stack", stat = "identity", width = 0.2) +
+  ggplot(aes(x = EVOLUCI, y = Porcentaje/100, fill = fct_rev(Comorbilidades_factor), label = paste0(Porcentaje, "%"))) +
+  geom_bar(position = "stack", stat = "identity", width = 0.6) +
   scale_y_continuous(labels = scales::percent) +
   geom_label(aes(family = "Barlow black"), size = 6, 
              position = position_stack(vjust = 0.5), 
@@ -217,18 +220,18 @@ num_comorbilidades %>%
              label.size = NA,
              color = "white") +
   guides(fill = guide_legend(title = "Número de \ncomorbilidades", 
-                             title.theme = element_text(family = "Barlow black", color = "white"),
-                             label.theme = element_text(family = "Barlow regular", color = "white"))) +
+                             title.theme = element_text(family = "Barlow black", color = "white", size = 20),
+                             label.theme = element_text(family = "Barlow regular", color = "white", size = 14))) +
   theme(
     text = element_text(family = "Barlow regular"),
     axis.title = element_blank(),
     axis.ticks = element_blank(),
     axis.text = element_blank(),
+    axis.text.x = element_text(family = "Barlow light", color = "white", size = 16),
     panel.grid = element_blank(),
     panel.background = element_blank()
     )
 ```
-
 
 ```{r echo = FALSE}
 comorbilidades = sinave_vacunados %>%
@@ -273,7 +276,9 @@ sinave_vacunados %>%
   labs(y = NULL, fill = NULL, color = NULL) +
   scale_y_continuous(labels = scales::percent) +
   guides(fill = guide_legend(title = "¿Padece la \ncomorbilidad?",
-                             title.theme = element_text(family = "Barlow black", color = "white")), color = "none") +
+                             title.theme = element_text(family = "Barlow black", color = "white", size = 20),
+                             label.theme = element_text(family = "Barlow regular", color = "white", size = 14)
+                             ), color = "none") +
   theme(
     text = element_text(family = "Barlow regular"),
     axis.title = element_blank(),
@@ -281,133 +286,3 @@ sinave_vacunados %>%
     panel.background = element_blank()
     )
 ```
-
-
-
-
-
-
-
-
-
-
-<!-- ```{r, dpi = 500} -->
-<!-- sinave_vacunados %>% -->
-<!--   filter(EVOLUCI != "Defunción") %>%  -->
-<!--   drop_na(FEGRESO) %>% -->
-<!--   count(TIPO_VAC_COV) %>% -->
-<!--   mutate( -->
-<!--     Porcentaje = paste0(round(100 * prop.table(n)),"%"), -->
-<!--     csum = rev(cumsum(rev(n))),  -->
-<!--     pos = n/2 + lead(csum, 1), -->
-<!--     pos = if_else(is.na(pos), n/2, pos) -->
-<!--   ) %>% -->
-<!--   ggplot(aes(x = "", y = n, fill = TIPO_VAC_COV)) + -->
-<!--   geom_bar(stat = "identity", width = 1, color = "white") + -->
-<!--   geom_label_repel(aes(y = pos, label = Porcentaje, family = "Barlow black"), -->
-<!--                    size = 4.5, nudge_x = 1, show.legend = FALSE, label.size = NA, color = "white") +   -->
-<!--   coord_polar("y", start = 0) + -->
-<!--   guides(fill = guide_legend(title = "Laboratorio",  -->
-<!--                              title.theme = element_text(family = "Barlow black", color = "white"), -->
-<!--                              label.theme = element_text(family = "Barlow regular", color = "white"))) + -->
-<!--   theme( -->
-<!--     panel.grid = element_blank(), -->
-<!--     axis.text = element_blank(), -->
-<!--     axis.title = element_blank(), -->
-<!--     axis.ticks = element_blank(), -->
-<!--     panel.background = element_blank() -->
-<!--   ) -->
-
-<!-- ``` -->
-
-
-<!-- # ```{r} -->
-<!-- # num_comorbilidades = sinave_vacunados %>% -->
-<!-- #   filter(EVOLUCI != "Defunción") %>%  -->
-<!-- #   drop_na(FEGRESO) %>% -->
-<!-- #   select(DIABETES:TABAQUIS) %>% -->
-<!-- #   transmute( -->
-<!-- #     Comorbilidades = apply(., MARGIN = 1, FUN = function(x) { -->
-<!-- #       length(which(x == "SI")) -->
-<!-- #     }) -->
-<!-- #   ) %>% -->
-<!-- #   mutate( -->
-<!-- #     Comorbilidades_factor = case_when( -->
-<!-- #       Comorbilidades == 0 ~ "0", -->
-<!-- #       Comorbilidades == 1 ~ "1", -->
-<!-- #       between(Comorbilidades, 2, 3) ~ "2-3", -->
-<!-- #       Comorbilidades > 3 ~ "4+" -->
-<!-- #       ), -->
-<!-- #     Comorbilidades_factor = factor(Comorbilidades_factor, labels = c("0", "1", "2-3", "4+"), levels = c("0", "1", "2-3", "4+"), ordered = TRUE) -->
-<!-- #   ) %>% -->
-<!-- #   count(Comorbilidades_factor) %>% -->
-<!-- #   mutate( -->
-<!-- #     Porcentaje = round_preserve_sum(100 * prop.table(n)) -->
-<!-- #   ) -->
-<!-- #  -->
-<!-- # ``` -->
-<!-- #  -->
-<!-- # ```{r} -->
-<!-- # num_comorbilidades %>% -->
-<!-- #   ggplot(aes(x = "", y = Porcentaje/100, fill = fct_rev(Comorbilidades_factor), label = paste0(Porcentaje, "%"))) + -->
-<!-- #   geom_bar(position = "stack", stat = "identity", width = 0.2) + -->
-<!-- #   scale_y_continuous(labels = scales::percent) + -->
-<!-- #   scale_fill_manual(drop = FALSE, values = c("#E69F00", "#009E73", "#0072B2", "#CC79A7")) + -->
-<!-- #   geom_label(aes(family = "Barlow black"), size = 6,  -->
-<!-- #              position = position_stack(vjust = 0.5),  -->
-<!-- #              show.legend = FALSE, -->
-<!-- #              label.size = NA, -->
-<!-- #              color = "white") + -->
-<!-- #   guides(fill = guide_legend(title = "Número de \ncomorbilidades",  -->
-<!-- #                              title.theme = element_text(family = "Barlow black", color = "white"), -->
-<!-- #                              label.theme = element_text(family = "Barlow regular", color = "white"))) + -->
-<!-- #   theme( -->
-<!-- #     text = element_text(family = "Barlow regular"), -->
-<!-- #     axis.title = element_blank(), -->
-<!-- #     axis.ticks = element_blank(), -->
-<!-- #     axis.text = element_blank(), -->
-<!-- #     panel.grid = element_blank(), -->
-<!-- #     panel.background = element_blank() -->
-<!-- #     ) -->
-<!-- # ``` -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- # ```{r} -->
-<!-- # sinave_vacunados %>%  -->
-<!-- #   filter(EVOLUCI != "Defunción") %>%  -->
-<!-- #   drop_na(FEGRESO) %>% -->
-<!-- #   select(DIABETES:TABAQUIS) %>% -->
-<!-- #   pivot_longer(DIABETES:TABAQUIS, names_to = "COMORBILIDAD", values_to = "RESULTADO") %>% -->
-<!-- #   mutate_if(is.character, factor) %>% -->
-<!-- #   group_by(COMORBILIDAD, RESULTADO) %>% -->
-<!-- #   summarise( -->
-<!-- #     n = n() -->
-<!-- #   ) %>%  -->
-<!-- #   mutate( -->
-<!-- #     Porcentaje = round_preserve_sum(100 * prop.table(n))  -->
-<!-- #     ) %>% -->
-<!-- #   ggplot(aes(x = "", y = Porcentaje/100 , fill = RESULTADO, color = RESULTADO, label = paste0(Porcentaje, "%"))) + -->
-<!-- #   geom_bar(position = "fill", stat = "identity") + -->
-<!-- #   geom_label(aes(x = "", family = "Barlow black"), size = 5,  -->
-<!-- #            position = position_stack(vjust = 0.5),  -->
-<!-- #            show.legend = FALSE, -->
-<!-- #            label.size = NA, -->
-<!-- #            color = "white") + -->
-<!-- #   facet_wrap(~ COMORBILIDAD) + -->
-<!-- #   labs(y = NULL, fill = NULL, color = NULL) + -->
-<!-- #   scale_y_continuous(labels = scales::percent) + -->
-<!-- #   guides(fill = guide_legend(title = "¿Padece la \ncomorbilidad?", -->
-<!-- #                              title.theme = element_text(family = "Barlow black", color = "white")), color = "none") + -->
-<!-- #   theme( -->
-<!-- #     text = element_text(family = "Barlow regular"), -->
-<!-- #     axis.title = element_blank(), -->
-<!-- #     axis.ticks = element_blank(), -->
-<!-- #     panel.background = element_blank() -->
-<!-- #     ) -->
-
-<!-- ``` -->
-
