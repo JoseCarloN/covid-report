@@ -1,6 +1,6 @@
 ---
 title: "Defunciones de pacientes con esquema de vacunación completo y efectivo"
-date: '`r paste("Actualizado el", format(Sys.Date() - 1, "%d de %B del %Y"), "con datos de la SINAVE")`'
+date: '`r paste("Actualizado el", format(Sys.Date(), "%d de %B del %Y"), "con datos de la SINAVE")`'
 output:
   html_document:
     fig_retina: 1
@@ -76,7 +76,7 @@ h3 {
 ```
 
 ```{r echo = FALSE, message=FALSE}
-sinave = arrow::read_parquet("../Data/BASE YUC 19 SEPT.parquet", encoding = "UTF-8", stringsAsFactors = FALSE)
+sinave = arrow::read_parquet("../Data/BASE YUC 20 SEPT.parquet", encoding = "UTF-8", stringsAsFactors = FALSE)
 colnames(sinave) = c("ORIGEN", colnames(sinave[,-1]))
 
 sinave_vacunados = sinave %>%
