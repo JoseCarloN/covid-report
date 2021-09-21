@@ -13,12 +13,8 @@ output:
     toc_float:
       collapsed: no
       smooth_scroll: yes
-  word_document:
-    toc: yes
-  pdf_document:
-    toc: yes
 editor_options: 
-  chunk_output_type: inline
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -77,8 +73,9 @@ h3 {
 ```
 
 ```{r echo = FALSE, message=FALSE}
-sinave = arrow::read_parquet("../Data/BASE YUC 20 SEPT.parquet", encoding = "UTF-8", stringsAsFactors = FALSE)
-colnames(sinave) = c("ORIGEN", colnames(sinave[,-1]))
+path = list.files(path = "../Data", pattern = ".parquet", full.names = TRUE)
+
+sinave = arrow::read_parquet(path, encoding = "UTF-8", stringsAsFactors = FALSE)
 
 sinave_vacunados = sinave %>%
   filter(CLASCOVID19 %in% c("CONF LAB", "CONF ANT", "CONF ASO", "CONF DIC")) %>%
@@ -104,13 +101,16 @@ sinave_vacunados = sinave %>%
   mutate(
     EVOLUCI = ifelse(EVOLUCI != "Defunción", "Mejoría", EVOLUCI)
   )
+```
 
+```{r echo = FALSE, message = FALSE}
 fallecidos = sinave_vacunados %>%
   count(EVOLUCI) %>%
   mutate(
     Porcentaje = round(100 * prop.table(n))
   )
 ```
+
 
 # Análisis descriptivo
 
@@ -150,7 +150,7 @@ desconocido_laboratorio = laboratorios[which(laboratorios$TIPO_VAC_COV == "Se de
 
 En cuanto a la vacuna con la que contaban los pacientes que fallecieron, el mayor porcentaje de aplicación en estos es la del laboratorio de `r max_laboratorio %>% pull(TIPO_VAC_COV)` con el `r max_laboratorio %>% pull(Porcentaje)`% de los casos. Seguida por el laboratorio `r segundo_laboratorio %>% pull(TIPO_VAC_COV)` con un `r segundo_laboratorio %>% pull(Porcentaje)`%. Se desconoce el laboratorio al que pertenece la vacuna del `r desconocido_laboratorio %>% pull(Porcentaje)`%.
 
-```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height=4.34, fig.width=10}
+```{r echo = FALSE, dpi = 500, fig.showtext = TRUE, fig.height = 4, fig.width = 10}
 sinave_vacunados %>%
   group_by(EVOLUCI, TIPO_VAC_COV) %>%
   summarise(
