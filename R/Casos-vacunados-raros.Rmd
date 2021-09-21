@@ -15,6 +15,8 @@ output:
       smooth_scroll: yes
 editor_options: 
   chunk_output_type: console
+params:
+  report_date: !r Sys.Date()
 ---
 
 ```{r setup, include=FALSE}
@@ -118,7 +120,7 @@ Con respecto a la base de datos de la SINAVE, al día de hoy se registran `r nro
 
 ### Edad
 
-El rango de edad de las defunciones es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% min()` a `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% max()` años. Por otro lado, la edad promedio de los `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` pacientes que fallecieron es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% mean() %>% round()` años.
+El rango de edad de las defunciones es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% min()` a `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% max()` años. Por otro lado, la edad promedio de los `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` pacientes que fallecieron es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% mean() %>% round()` años. `r params$report_date`
 
 ```{r echo = FALSE}
 tipacien = sinave_vacunados %>%
