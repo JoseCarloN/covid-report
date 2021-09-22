@@ -1,7 +1,9 @@
 library(git2r)
+library(glue)
 
 # Adjust the date of the report acordingly 
-fecha_reporte = Sys.Date() - 1
+fecha_reporte = Sys.Date()
+format_fecha = format(fecha_reporte, "%B %d")
 
 # Renders the html to update
 rmarkdown::render(input = "Casos-vacunados-raros.Rmd", params = list(
@@ -12,8 +14,8 @@ rmarkdown::render(input = "Casos-vacunados-raros.Rmd", params = list(
 
 # Login credentials
 credentials = cred_ssh_key(
-  publickey = "../secrets/key.pub",
-  privatekey = "../secrets/key"
+  publickey = "C:/Users/jose.navarrete/.ssh/id_rsa.pub",
+  privatekey = "C:/Users/jose.navarrete/.ssh/id_rsa"
 )
 
 
@@ -30,7 +32,7 @@ add(repo = "../html", path = ".")
 status(repo = "../html")
 
 # Commits
-commit(repo = "../html", message = "updated to most recent")
+commit(repo = "../html", message = glue("updated {format_fecha}"))
 
 # Push the commit
-push(object = "../html", name = "origin", refspec = "main", credentials = credentials)
+push(object = "../html", name = "origin", refspec = "refs/heads/main", credentials = credentials)
