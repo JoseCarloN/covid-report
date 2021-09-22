@@ -1,6 +1,6 @@
 ---
 title: "Defunciones de pacientes con esquema de vacunación completo y efectivo"
-date: '`r paste("Actualizado el", format(Sys.Date(), "%d de %B del %Y"), "con datos de la SINAVE")`'
+date: '`r paste("Actualizado el", format(params$report_date, "%d de %B del %Y"), "con datos de la SINAVE")`'
 output:
   html_document:
     fig_retina: 1
@@ -16,7 +16,7 @@ output:
 editor_options: 
   chunk_output_type: console
 params:
-  report_date: !r Sys.Date()
+  report_date: !r Sys.Date() - 1
 ---
 
 ```{r setup, include=FALSE}
@@ -41,7 +41,7 @@ library(ggrepel)
 library(Rfast)
 
 thematic_rmd()
-# font_add_google("Barlow", "Barlow regular", regular.wt = 500, bold.wt = 900)
+
 font_add("Barlow black", regular = "C:/Windows/Fonts/Barlow-Black.ttf")
 font_add("Barlow light", regular = "C:/Windows/Fonts/Barlow-light.ttf")
 
@@ -120,7 +120,7 @@ Con respecto a la base de datos de la SINAVE, al día de hoy se registran `r nro
 
 ### Edad
 
-El rango de edad de las defunciones es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% min()` a `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% max()` años. Por otro lado, la edad promedio de los `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` pacientes que fallecieron es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% mean() %>% round()` años. `r params$report_date`
+El rango de edad de las defunciones es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% min()` a `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% max()` años. Por otro lado, la edad promedio de los `r fallecidos %>% filter(EVOLUCI == "Defunción") %>% pull(n)` pacientes que fallecieron es de `r sinave_vacunados %>% filter(EVOLUCI == "Defunción") %>% pull(EDAD) %>% mean() %>% round()` años.
 
 ```{r echo = FALSE}
 tipacien = sinave_vacunados %>%
